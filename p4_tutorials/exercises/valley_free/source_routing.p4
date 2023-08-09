@@ -43,7 +43,7 @@ header ipv4_t {
     ip4Addr_t dstAddr;
 }
 
-#include "hydra/valley_free_generated.p4"
+#include "hydra/hydra.v1model_1"
 
 
 struct metadata {

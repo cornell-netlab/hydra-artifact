@@ -1,4 +1,4 @@
-control bool is_spine_switch;
+control bit<1> is_spine_switch;
 tele bool visited_spine;
 tele bool to_reject;
 
@@ -7,7 +7,7 @@ init {
   to_reject = false;
 }
 telemetry {
-  if (is_spine_switch) {
+  if (is_spine_switch == 1) {
     if (visited_spine) {
         to_reject = true;
     }

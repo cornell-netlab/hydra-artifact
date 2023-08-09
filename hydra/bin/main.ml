@@ -65,7 +65,7 @@ let generate_from_topology prog built_ins tpc_file topology : unit =
       Core_unix.chdir directory;
       let print_file idx fmt_prog =
         let open_file =
-          open_out (Printf.sprintf "hydra.v1model_%d" (idx + 1))
+          open_out (Printf.sprintf "hydra.v1model_%d.p4" (idx + 1))
         in
         let formatter = Format.formatter_of_out_channel open_file in
         Format.fprintf formatter "@[%a@]@\n" Pp.to_fmt fmt_prog;
