@@ -82,8 +82,10 @@ copy the file to the p4_tutorials directory where the source routing example liv
 
 ## Running the source routing example in mininet
 
-run `make` to run mininet and start the example. 
+run `make` to run mininet and start the example with the following topology
 
 ![pod-topo](./p4_tutorials/exercises/basic/pod-topo/pod-topo.png)
+
+You can run commands in mininet either by getting a terminal for each host (e.g. `xterm h1 h4`) or within the mininet console pre-pending the name of the host to the command (e.g. `h1 python3 receive.py`)
 
 
