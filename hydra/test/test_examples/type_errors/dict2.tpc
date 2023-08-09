@@ -1,0 +1,8 @@
+control dict<(bit<32>,bit<16>),bool> x;
+init {
+   bit<32> lu1 = 0;
+   bool lu2 = 1;
+   bool y = x[(lu1,lu2)];
+} 
+telemetry {} 
+check {}

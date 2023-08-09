@@ -1,0 +1,7 @@
+control dict<bit<32>,bool> x;
+init {
+   bit<32> lookup = 0;
+   bool y = x[(lookup)];
+} 
+telemetry {} 
+check {}

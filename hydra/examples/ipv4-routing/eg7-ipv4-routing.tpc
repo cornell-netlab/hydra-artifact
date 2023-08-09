@@ -1,0 +1,23 @@
+control bool is_switch_leaf;
+tele bool to_reject;
+control bool lasthop;
+control bool firsthop;
+
+init {
+  to_reject = false;
+  if (!is_switch_leaf) {
+    to_reject = true;
+  }
+}
+telemetry {
+  if (!lasthop && !firsthop && is_switch_leaf) {
+    to_reject = true;
+  }
+}
+check {
+  if (!is_switch_leaf || to_reject) {
+    reject;
+  }
+}
+
+

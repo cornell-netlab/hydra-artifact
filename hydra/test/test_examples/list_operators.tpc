@@ -1,0 +1,15 @@
+tele bool[10] l;
+tele bool b;
+tele bit<32> x;
+tele bit<32>[10] xList;
+init {
+    b = l[2];
+    b = b in l; 
+    x = length l;
+    l.push(b);
+    l = [true, false];
+    xList = [1,2,3];
+    l.push(false);
+} 
+telemetry {} 
+check {}

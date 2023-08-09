@@ -1,0 +1,14 @@
+control dict <bit<8>,bit<8>> tenants;
+tele bit<8> tenant; 
+header@standard_metadata.ingress_port bit<8> in_port;
+header@standard_metadata.egress_port bit<8> eg_port;
+
+init { 
+  tenant = tenants [(in_port)];
+}
+telemetry {  }
+check { 
+  if (tenant != tenants [(eg_port)]) {
+    reject;
+  }
+}

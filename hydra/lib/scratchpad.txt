@@ -1,0 +1,53 @@
+int[3] loop;
+
+for (x in loop) { 
+
+    if (x) {
+        reject;
+    }
+}
+
+------------------------------------------------------------------------------------------------------
+//need the type of x for declaration. Can probably re-use local declaration code
+//first set variable names to loop iteration value and check that it's valid 
+// in the first iteration, should initialize loop variables
+
+if (loop[0].isValid()) {
+    x = loop[0]
+    // insert code in for
+    if (x) {
+        reject = true;
+    }
+}
+
+if (loop[1].isValid()) {
+    x = loop[1]
+    // insert code in for
+    if (x) {
+        reject = true;
+    }
+}
+
+if (loop[2].isValid()) {
+    x = loop[2]
+    // insert code in for
+    if (x) {
+        reject = true;
+    }
+}
+
+if (loop[3].isValid()) {
+    x = loop[3]
+    // insert code in for
+    if (x) {
+        reject = true;
+    }
+}
+
+----------------------------------
+----------------------------------
+
+for (x, y in loop1, loop2)
+
+----------------------------------
+

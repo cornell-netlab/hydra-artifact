@@ -1,0 +1,20 @@
+tele bool[10] l;
+init {
+   for (x in l) {
+     bit<32> y = 0; 
+   }
+   bool y = false;
+   if (false) {
+    bool t = true;
+   }
+   bool t = false;
+   bit<32> x = 5;
+} 
+telemetry {
+    bit<32> x = 10;
+    bool t = true;
+} 
+check {
+    bit<32> x = 10;
+    bool t = true;
+}

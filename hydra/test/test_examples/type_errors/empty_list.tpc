@@ -1,0 +1,5 @@
+init {
+    bool[10] l = [];
+} 
+telemetry {} 
+check {}

@@ -1,0 +1,23 @@
+control dict<(bit<32>,bit<32>),bool> allowed;
+tele bool violated;
+control bool lasthop;
+
+// header variables correspond to read only packet headers
+header@hdr.ipv4.src_addr bit<32> ipv4_src;
+header@hdr.ipv4.dst_addr bit<32> ipv4_dst;
+
+init {
+  violated = false;
+  if (!allowed[(ipv4_src,ipv4_dst)]) {
+    violated = true;
+  }
+}
+telemetry {
+  if (lasthop && !allowed[(ipv4_dst,ipv4_src)]) {
+    //report((ipv4_dst,ipv4_src));
+    reject;
+  }
+}
+check {
+  if (violated) { reject; }
+}

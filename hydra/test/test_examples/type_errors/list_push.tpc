@@ -1,0 +1,6 @@
+init {
+    bool[10] x = [true, false]; 
+    x.push(1);
+} 
+telemetry {} 
+check {}

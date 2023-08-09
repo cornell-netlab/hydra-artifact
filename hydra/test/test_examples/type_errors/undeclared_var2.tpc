@@ -1,0 +1,7 @@
+init {
+    if (true) {
+        x = true;
+    }
+} 
+telemetry {} 
+check {}

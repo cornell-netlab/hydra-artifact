@@ -1,0 +1,7 @@
+tele bool[10] l;
+tele bit<32> x;
+init {
+    x = l[2];
+} 
+telemetry {} 
+check {}

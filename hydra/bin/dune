@@ -1,0 +1,7 @@
+(executable
+  (public_name tpc)
+  (name main)
+  (package tpc)
+  (modules main)
+  (libraries core core_unix.command_unix tpc)
+  (preprocess (pps ppx_jane)))

@@ -1,0 +1,5 @@
+(tests
+  (names test)
+  (libraries core tpc alcotest)
+  (deps (source_tree ../examples))
+  (action (run %{test} -e)))

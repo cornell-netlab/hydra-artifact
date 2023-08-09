@@ -1,0 +1,10 @@
+{
+    "title": "Basic Topology",
+    "switches": 1,
+    "topology": [
+        {
+            "id": 1,
+            "leaf": true
+        }
+    ]
+}

@@ -1,0 +1,59 @@
+{
+  "target": "bmv2",
+  "p4info": "build/source_routing.p4.p4info.txt",
+  "bmv2_json": "build/source_routing.json",
+  "table_entries": [
+    {
+      "table": "MyIngress.tb_check_first_hop",
+      "match": {
+        "standard_metadata.ingress_port": [
+          1
+        ]
+      },
+      "action_name": "MyIngress.set_first_hop",
+      "action_params": {}
+    },
+    {
+      "table": "MyIngress.tb_check_first_hop",
+      "match": {
+        "standard_metadata.ingress_port": [
+          2
+        ]
+      },
+      "action_name": "MyIngress.set_first_hop",
+      "action_params": {}
+    },
+    {
+      "table": "MyEgress.tb_check_last_hop",
+      "match": {
+        "standard_metadata.egress_port": [
+          1
+        ]
+      },
+      "action_name": "MyEgress.set_last_hop",
+      "action_params": {}
+    },
+    {
+      "table": "MyEgress.tb_check_last_hop",
+      "match": {
+        "standard_metadata.egress_port": [
+          2
+        ]
+      },
+      "action_name": "MyEgress.set_last_hop",
+      "action_params": {}
+    },
+    {
+      "table": "MyEgress.telemetryControl.tb_init_cp_vars",
+      "match": {
+        "hydra_header.eth_type.$valid$": [
+          1
+        ]
+      },
+      "action_name": "MyEgress.telemetryControl.init_cp_vars",
+      "action_params": {
+        "is_spine_switch": 0
+      }
+    }
+  ]
+}

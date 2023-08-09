@@ -1,0 +1,6 @@
+header bool x;
+init {
+   x = true;
+} 
+telemetry {} 
+check {}

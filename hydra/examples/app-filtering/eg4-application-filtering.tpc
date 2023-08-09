@@ -1,0 +1,64 @@
+tele bit<32> ue_ipv4_addr;
+tele bit<32> app_ipv4_addr;
+tele bit<8> app_ip_proto;
+tele bit<16> app_l4_port;
+tele bit<8> filtering_action;
+control dict<(bit<32>,bit<8>,bit<32>,bit<16>),bit<8>> filtering_actions;
+
+header@eg_dprsr_md.drop_ctl bit<3> drop_ctl;
+header@hdr.inner_ipv4.isValid() bool inner_ipv4_is_valid;
+header@hdr.ipv4.isValid() bool ipv4_is_valid;
+header@hdr.inner_tcp.isValid() bool inner_tcp_is_valid;
+header@hdr.tcp.isValid() bool tcp_is_valid;
+header@hdr.inner_udp.isValid() bool inner_udp_is_valid;
+header@hdr.udp.isValid() bool udp_is_valid;
+header@hdr.inner_ipv4.src_addr bit<32> inner_ipv4_src;
+header@hdr.inner_ipv4.dst_addr bit<32> inner_ipv4_dst;
+header@hdr.inner_ipv4.proto bit<8> inner_ipv4_proto;
+header@hdr.inner_tcp.dport bit<16> inner_tcp_dport;
+header@hdr.inner_udp.dport bit<16> inner_udp_dport;
+header@hdr.outer_ipv4.src_addr bit<32> outer_ipv4_src;
+header@hdr.outer_ipv4.dst_addr bit<32> outer_ipv4_dst;
+header@hdr.outer_ipv4.proto bit<8> outer_ipv4_proto;
+header@hdr.outer_tcp.sport bit<16> outer_tcp_sport;
+header@hdr.outer_udp.sport bit<16> outer_udp_sport;
+
+init {
+  filtering_action = 0;
+  if (inner_ipv4_is_valid) {
+    ue_ipv4_addr = inner_ipv4_src;
+    app_ip_proto = inner_ipv4_proto;
+    app_ipv4_addr = inner_ipv4_dst;
+    if (inner_tcp_is_valid) {
+      app_l4_port = inner_tcp_dport;
+    } else {
+      if (inner_udp_is_valid) {
+        app_l4_port = inner_udp_dport;
+      }
+    }
+  } else { 
+      if (ipv4_is_valid) {
+        ue_ipv4_addr = outer_ipv4_dst;
+        app_ip_proto = outer_ipv4_proto;
+        app_ipv4_addr = outer_ipv4_src;
+        if (tcp_is_valid) {
+          app_l4_port = outer_tcp_sport;
+        } else { 
+            if (udp_is_valid) {
+              app_l4_port = outer_udp_sport;
+            }
+          }
+      }
+  }
+  filtering_action = filtering_actions[(ue_ipv4_addr, app_ip_proto, app_ipv4_addr, app_l4_port)];
+}
+telemetry {}
+check {
+  if (filtering_action == 1 && drop_ctl != 1) { 
+    reject;
+    //report((ue_ipv4_addr, app_ip_proto, app_ipv4_addr, app_l4_port, filtering_action));
+  }
+  if (filtering_action == 2 && drop_ctl == 1) { 
+    //report((ue_ipv4_addr, app_ip_proto, app_ipv4_addr, app_l4_port, filtering_action));
+  }
+} 

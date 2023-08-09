@@ -1,0 +1,8 @@
+tele bool[10] l;
+init {
+    for (x in l) { 
+       x = 5; 
+    }
+} 
+telemetry {} 
+check {}

@@ -1,0 +1,21 @@
+control bool is_spine_switch;
+tele bool visited_spine;
+tele bool to_reject;
+
+init {
+  visited_spine = false;
+  to_reject = false;
+}
+telemetry {
+  if (is_spine_switch) {
+    if (visited_spine) {
+        to_reject = true;
+    }
+    visited_spine = true;
+  }
+}
+check {
+  if (to_reject) {
+    reject;
+  }
+}

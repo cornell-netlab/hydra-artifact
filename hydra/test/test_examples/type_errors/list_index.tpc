@@ -1,0 +1,6 @@
+tele bool x;
+init {
+    bool y = x[1];
+}
+telemetry {}
+check {}

@@ -1,0 +1,6 @@
+
+init {
+    x = 5;
+} 
+telemetry {} 
+check {}

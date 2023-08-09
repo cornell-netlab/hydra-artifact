@@ -1,0 +1,19 @@
+{
+    "target": "bmv2",
+    "p4info": "build/source_routing.p4.p4info.txt",
+    "bmv2_json": "build/source_routing.json",
+    "table_entries": [
+        {
+            "table": "MyEgress.telemetryControl.tb_init_cp_vars",
+            "match": {
+                "hydra_header.eth_type.$valid$": [
+                    1
+                ]
+            },
+            "action_name": "MyEgress.telemetryControl.init_cp_vars",
+            "action_params": {
+                "switch_id": 4
+            }
+        }
+    ]
+}

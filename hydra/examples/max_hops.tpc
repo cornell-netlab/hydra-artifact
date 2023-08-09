@@ -1,0 +1,10 @@
+bit<32> hop_count = 0
+
+telemetry {
+  hop_count = hop_count + 1
+}
+checker {
+  if (hop_count > @max_hops) {
+    reject;
+  }
+}

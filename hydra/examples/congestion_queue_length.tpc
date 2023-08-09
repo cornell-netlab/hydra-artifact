@@ -1,0 +1,34 @@
+bit<32> queue_lengths[];
+init {
+
+}
+
+telemetry {
+  queue_lengths.append(%queue_length);
+}
+
+checker {
+  for (length in queue_lengths) {
+    if (length > @thresh) {
+      report
+    }
+  }
+}
+
+//alternative
+bool greater;
+init {
+  greater = false;
+}
+
+telemetry {
+  if (%queue_length > @thresh) {
+    greater = true;
+  }
+}
+
+checker {
+  if (greater) {
+    reject;
+  }
+}

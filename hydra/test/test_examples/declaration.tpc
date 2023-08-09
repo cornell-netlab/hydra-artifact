@@ -1,0 +1,7 @@
+tele bit<32> x;
+control set<bool> z;
+tele bool[10] y;
+control dict<bit<32>,bool> w;
+init {} 
+telemetry {} 
+check {}

@@ -1,0 +1,98 @@
+{
+  "target": "bmv2",
+  "p4info": "build/source_routing.p4.p4info.txt",
+  "bmv2_json": "build/source_routing.json",
+  "table_entries": [
+    {
+      "table": "MyIngress.tb_check_first_hop",
+      "match": {
+        "standard_metadata.ingress_port": [
+          1
+        ]
+      },
+      "action_name": "MyIngress.set_first_hop",
+      "action_params": {}
+    },
+    {
+      "table": "MyIngress.tb_check_first_hop",
+      "match": {
+        "standard_metadata.ingress_port": [
+          2
+        ]
+      },
+      "action_name": "MyIngress.set_first_hop",
+      "action_params": {}
+    },
+    {
+      "table": "MyEgress.tb_check_last_hop",
+      "match": {
+        "standard_metadata.egress_port": [
+          1
+        ]
+      },
+      "action_name": "MyEgress.set_last_hop",
+      "action_params": {}
+    },
+    {
+      "table": "MyEgress.tb_check_last_hop",
+      "match": {
+        "standard_metadata.egress_port": [
+          2
+        ]
+      },
+      "action_name": "MyEgress.set_last_hop",
+      "action_params": {}
+    },
+    {
+      "table": "MyEgress.telemetryControl.tb_init_cp_vars",
+      "match": {
+        "hydra_header.eth_type.$valid$": [
+          1
+        ]
+      },
+      "action_name": "MyEgress.telemetryControl.init_cp_vars",
+      "action_params": {
+        "switch_id": 1
+      }
+    },
+    {
+      "table": "MyIngress.initControl.tbl_lkp_cp_dict_expected_s1_dict",
+      "match": {
+        "hydra_metadata.expected_s1_dict_var0": [
+          "10.0.4.4",
+          32
+        ]
+      },
+      "action_name": "MyIngress.initControl.lkp_cp_dict_expected_s1_dict",
+      "action_params": {
+        "expected_s1_dict": 1
+      }
+    },
+    {
+      "table": "MyIngress.initControl.tbl_lkp_cp_dict_expected_s2_dict",
+      "match": {
+        "hydra_metadata.expected_s2_dict_var0": [
+          "10.0.4.4",
+          32
+        ]
+      },
+      "action_name": "MyIngress.initControl.lkp_cp_dict_expected_s2_dict",
+      "action_params": {
+        "expected_s2_dict": 3
+      }
+    },
+    {
+      "table": "MyIngress.initControl.tbl_lkp_cp_dict_expected_s3_dict",
+      "match": {
+        "hydra_metadata.expected_s3_dict_var0": [
+          "10.0.4.4",
+          32
+        ]
+      },
+      "action_name": "MyIngress.initControl.lkp_cp_dict_expected_s3_dict",
+      "action_params": {
+        "expected_s3_dict": 2
+      }
+    }
+  ]
+}

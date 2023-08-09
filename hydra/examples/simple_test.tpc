@@ -1,0 +1,5 @@
+tele bit<32> x; 
+init {} 
+telemetry {} 
+check {}
+

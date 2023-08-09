@@ -1,0 +1,188 @@
+header eth_type2_t {
+  bit<16> value;
+}
+header variables_t {
+  
+}
+header paths_preamble_t {
+  bit<8> num_items_paths;
+}
+header paths_item_t {
+  bit<16> value;
+}
+struct hydra_header_t {
+  eth_type2_t eth_type;
+  variables_t variables;
+  hops_preamble_t hops_preamble;
+  hops_item_t[4] hops;
+  paths_preamble_t paths_preamble;
+  paths_item_t[3] paths;
+}
+struct hydra_metadata_t {
+  bit<8> num_list_items;
+}
+parser CheckerHeaderParser(packet_in packet, out hydra_header_t hydra_header,
+                           inout hydra_metadata_t hydra_metadata) {
+  state parse_eth_type {
+    packet.extract(hydra_header.eth_type);
+    transition parse_variables;
+  }
+  state parse_variables {
+    packet.extract(hydra_header.variables);
+    transition parse_hops_preamble;
+  }
+  state parse_hops_preamble
+    {
+    packet.extract(hydra_header.hops_preamble);
+    hydra_metadata.num_list_items =
+    hydra_header.hops_preamble.num_hops_items;
+    transition select(hydra_metadata.num_list_items) {
+      0: parse_paths_preamble;
+      default: parse_hops;
+    }
+  }
+  state parse_paths_preamble
+    {
+    packet.extract(hydra_header.paths_preamble);
+    hydra_metadata.num_list_items =
+    hydra_header.paths_preamble.num_paths_items;
+    transition select(hydra_metadata.num_list_items) {
+      0: accept;
+      default: parse_paths;
+    }
+  }
+  state parse_hops
+    {
+    packet.extract(hydra_header.hops.next);
+    hydra_metadata.num_list_items = hydra_metadata.num_list_items-1;
+    transition select(hydra_metadata.num_list_items) {
+      0: parse_paths_preamble;
+      default: parse_hops;
+    }
+  }
+  state parse_paths
+    {
+    packet.extract(hydra_header.paths.next);
+    hydra_metadata.num_list_items = hydra_metadata.num_list_items-1;
+    transition select(hydra_metadata.num_list_items) {
+      0: accept;
+      default: parse_paths;
+    }
+  }
+}
+control CheckerHeaderDeparser(packet_out packet,
+                              out hydra_header_t hydra_header) {
+  apply
+    {
+    packet.emit(hydra_header.eth_type);
+    packet.emit(hydra_header.variables);
+    packet.emit(hydra_header.hops_preamble);
+    packet.emit(hydra_header.hops);
+    packet.emit(hydra_header.paths_preamble);
+    packet.emit(hydra_header.paths);
+  }
+}
+control initControl(in ingress_headers_t hdr,
+                    inout checker_header_t checker_header,
+                    inout checker_metadata_t checker_metadata) {
+  action init_cp_vars(bit<16> switch_id)
+    {
+    checker_metadata.variables.switch_id = switch_id;
+  }
+  table tb_init_cp_vars {
+    key = {
+      
+    }
+    actions = {
+      init_cp_vars;
+    }
+    size = 2;
+  }
+  apply
+    {
+    tb_init_cp_vars.apply();
+    hydra_header.eth_type.setValid();
+    hydra_header.eth_type.value = ETHERTYPE_CHECKER;
+    hydra_header.checker_header_types.setValid();
+    hydra_header.hydra_header_types.variables = 1w1;
+    hydra_header.variables.setValid();
+    hydra_header.variables.paths = 0;
+  }
+}
+control telemetryControl(in ingress_headers_t hdr,
+                         inout checker_header_t checker_header,
+                         inout checker_metadata_t checker_metadata) {
+  action init_cp_vars(bit<16> switch_id)
+    {
+    checker_metadata.variables.switch_id = switch_id;
+  }
+  table tb_init_cp_vars {
+    key = {
+      
+    }
+    actions = {
+      init_cp_vars;
+    }
+    size = 2;
+  }
+  apply
+    {
+    tb_init_cp_vars.apply();
+    hydra_header.pathss.push_front(1);
+    hydra_header.pathss[0].setValid();
+    hydra_header.pathss[0].paths = hydra_metadata.switch_id;
+  }
+}
+control checkerControl(in ingress_headers_t hdr,
+                       inout checker_header_t checker_header,
+                       inout checker_metadata_t checker_metadata) {
+  action init_cp_vars(bit<16> switch_id)
+    {
+    checker_metadata.variables.switch_id = switch_id;
+  }
+  table tb_init_cp_vars {
+    key = {
+      
+    }
+    actions = {
+      init_cp_vars;
+    }
+    size = 2;
+  }
+  apply
+    {
+    tb_init_cp_vars.apply();
+    hydra_header.eth_typ.setInvalid();
+    hydra_header.hydra_header_types.setInvalid();
+    hydra_header.hops_preamble.setInvalid();
+    hydra_header.variables.setInvalid();
+    bool found = false;
+    bit<16> waypoint = 3;
+    bit<16> switch;
+    if (hydra_header.paths[0].isValid())
+      {
+      switch = hydra_header.paths[0];
+      if (waypoint==switch) {
+        found = true;
+      }
+      if (hydra_header.paths[1].isValid())
+        {
+        switch = hydra_header.paths[1];
+        if (waypoint==switch) {
+          found = true;
+        }
+        if (hydra_header.paths[2].isValid())
+          {
+          switch = hydra_header.paths[2];
+          if (waypoint==switch) {
+            found = true;
+          }
+        }
+      }
+    }
+    if (!found) {
+      checker_metadata.reject0 = true;
+    }
+  }
+}
+

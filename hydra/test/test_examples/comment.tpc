@@ -1,0 +1,8 @@
+// this is a comment
+init { // this is a comment
+} 
+//this is a comment
+telemetry {
+    //this is a comment
+} 
+check {}

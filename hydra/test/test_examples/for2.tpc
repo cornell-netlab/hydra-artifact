@@ -1,0 +1,9 @@
+tele bool[10] l;
+tele bit<32> y;
+init {
+    for (x in l) { 
+        y = 1;
+    }
+} 
+telemetry {} 
+check {}

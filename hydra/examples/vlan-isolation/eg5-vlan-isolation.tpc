@@ -1,0 +1,21 @@
+control dict <bit<8>,bit<8>> vlans;
+control bit<8> switch_vlan;
+tele bit<8> prev_vlan;
+tele bool vlan_valid; 
+
+init { 
+  prev_vlan = switch_vlan;
+}
+telemetry {
+  if (vlan_valid && prev_vlan == switch_vlan) {
+    vlan_valid = true;
+  } else {
+    vlan_valid = false;
+  }
+  prev_vlan = switch_vlan;
+}
+check { 
+  if (!vlan_valid) {
+    reject;
+  }
+}

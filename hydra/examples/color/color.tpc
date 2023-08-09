@@ -1,0 +1,20 @@
+control bit<32> switch_slice;
+tele bit<32>[3] slices;
+
+init {
+  
+}
+
+telemetry {
+  slices.push(switch_slice);
+}
+
+check {
+  bit<32> prev_slice = slices[0];
+  for (slice in slices) {
+    if (prev_slice != slice) {
+      reject;
+    }
+    prev_slice = slice;
+  }
+}

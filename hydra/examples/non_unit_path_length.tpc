@@ -1,0 +1,18 @@
+bool unit_path;
+
+init {
+  unit_path = false;
+}
+
+telemetry {
+  if(!last_hop && !first_hop) {
+    unit_path = true;
+  }
+}
+
+checker {
+  if (!unit_path) {
+    reject;
+  }
+}
+

@@ -1,0 +1,26 @@
+control bit<16> switch_id;
+tele bit<16> s1_id;
+tele bit<16> s2_id;
+tele bool s1_visited;
+tele bool s1s2_visited;
+
+init {
+  s1_id = 3; 
+  s2_id = 4;
+  s1_visited = false;
+  s1s2_visited = false;
+}
+
+telemetry {
+  if (switch_id == s1_id) {
+    s1_visited = true;
+  }
+  if (s1_visited && switch_id == s2_id) {
+    s1s2_visited = true;
+  }
+}
+check {
+  if (!s1s2_visited) {
+    reject;
+  }
+}

@@ -1,0 +1,22 @@
+// TODO(Sundar): make path usage consistent with loops example; or get rid of it
+control bit<16> switch_id;
+tele bit<16>[3] paths;
+
+init {}
+
+//allow local variables in telemetry and checker block
+telemetry {
+  paths.push(switch_id);
+}
+
+check {
+  bool found = false;
+  bit<16> waypoint = 3;
+  
+  if (waypoint in paths) {
+    found = true;
+  }
+  if (!found) {
+    reject;
+  }
+}

@@ -1,0 +1,28 @@
+(lang dune 2.8)
+(using menhir 2.0)
+(name tpc)
+
+(generate_opam_files true)
+
+(package
+ (name tpc)
+ (version 0.0.1)
+ (synopsis     "TPC: Tiny Packet Checkers")
+ (maintainers  "jnfoster@cs.cornell.edu")
+ (authors      "Sundararajan Renganathan"
+               "Benny Rubin"
+               "Nate Foster")
+ (homepage     "https://github.com/cornell-netlab/tpc")
+ (bug_reports  "https://github.com/cornell-netlab/tpc")
+ (license      "Apache-2.0")
+ (depends
+   ocaml
+   dune
+   menhir
+   odoc
+   core
+   core_unix
+   pp
+   alcotest
+   ppx_jane))
+

@@ -1,0 +1,4 @@
+header bool[10] x;
+init {} 
+telemetry {} 
+check {}

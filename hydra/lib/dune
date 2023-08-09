@@ -1,0 +1,13 @@
+(menhir
+ (flags --explain)
+ (modules parser))
+
+(ocamllex
+ (modules lexer))
+
+(library
+ (public_name tpc)
+ (name tpc)
+ (libraries core pp yojson petr4)
+ (preprocess
+  (pps ppx_jane)))

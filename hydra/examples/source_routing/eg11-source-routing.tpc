@@ -1,0 +1,34 @@
+control bit<16> switch_id;
+control dict<bit<32>,bit<16>> expected_s1_dict; 
+control dict<bit<32>,bit<16>> expected_s2_dict; 
+control dict<bit<32>,bit<16>> expected_s3_dict; 
+header@hdr.ipv4.dstAddr bit<32> ipv4_dst;
+
+tele bit<16>[3] expected_path;
+tele bit<7> index;
+tele bool to_reject;
+
+init {
+  expected_path.push(expected_s3_dict[(ipv4_dst)]);
+  expected_path.push(expected_s2_dict[(ipv4_dst)]);
+  expected_path.push(expected_s1_dict[(ipv4_dst)]);
+
+  index = 0;
+  to_reject = false;
+}
+telemetry {
+  if (expected_path[index] != switch_id) {
+    to_reject = true;
+  } else {
+    if (index < 3) {
+      index = index + 1;
+    } else {
+      to_reject = true;
+    }
+  }
+}
+check {
+  if (to_reject) {
+    reject;
+  }
+}

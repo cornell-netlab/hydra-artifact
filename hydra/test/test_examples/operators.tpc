@@ -1,0 +1,25 @@
+tele bit<32> x; 
+tele bit<32> y;
+tele bool b;
+init {
+    x = 1;
+    y = 2;
+    b = true;
+    b = false;
+    y = x + y;
+    y = x * y; 
+    y = x - y; 
+    y = x / y; 
+    y = ~x; 
+    y = x & y;
+    b = b && b; 
+    y = x | y;
+    b = y == x;
+    b = y < x; 
+    b = y <= x; 
+    b = !b; 
+    b = b && b; 
+    b = b || b; 
+} 
+telemetry {} 
+check {}

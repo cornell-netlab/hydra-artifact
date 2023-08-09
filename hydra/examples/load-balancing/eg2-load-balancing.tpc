@@ -1,0 +1,37 @@
+sensor bit<32> left_load;
+sensor bit<32> right_load;
+control bit<8> left_port;
+control bit<8> right_port;
+control bit<32> thresh;
+control dict<bit<8>,bool> is_uplink;
+tele bit<32>[4] left_loads;
+tele bit<32>[4] right_loads;
+header@standard_metadata.egress_port bit<8> eg_port; 
+header@standard_metadata.packet_length bit<32> packet_len;
+
+init {
+  left_load = 0;
+  right_load = 0;
+}
+telemetry {
+  if (is_uplink[(eg_port)]) {
+    if (eg_port == left_port) {
+      left_load = left_load + packet_len; 
+    }
+    else {
+      if (eg_port == right_port) {
+        right_load = right_load + packet_len;
+      }
+    }
+  }
+  left_loads.push(left_load);
+  right_loads.push(right_load);
+}
+check {
+  for (l_load, r_load in left_loads, right_loads) {
+    bit<32> diff = l_load - r_load;
+    if ((l_load < r_load) && (~diff > thresh) || ((l_load >= r_load) && (diff > thresh))) {
+      reject;
+    }
+  }
+}

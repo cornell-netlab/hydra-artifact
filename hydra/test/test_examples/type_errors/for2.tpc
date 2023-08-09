@@ -1,0 +1,8 @@
+tele bit<32> x;
+init {
+    for (y in x) {
+        
+    }
+} 
+telemetry {} 
+check {}

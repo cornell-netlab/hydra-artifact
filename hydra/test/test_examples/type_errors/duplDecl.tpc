@@ -1,0 +1,5 @@
+tele bit<32> x;
+header bool x;
+init {} 
+telemetry {} 
+check {}

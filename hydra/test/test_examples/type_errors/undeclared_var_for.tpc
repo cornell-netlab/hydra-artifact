@@ -1,0 +1,8 @@
+
+init {
+    for (x in l) {
+        
+    }
+} 
+telemetry {} 
+check {}

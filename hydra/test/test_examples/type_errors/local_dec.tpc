@@ -1,0 +1,6 @@
+
+init {
+   bit<32> x = true; 
+} 
+telemetry {} 
+check {}

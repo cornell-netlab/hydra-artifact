@@ -1,0 +1,31 @@
+bool even;
+init {
+  even = false;
+}
+
+telemetry {
+  even = not even;
+}
+
+checker {
+  if (not even) 
+    reject;
+}
+
+
+//alternative program
+bit<32> hops;
+init {
+  hops = -1;
+}
+
+// do we want a way to specify that the telemetry shouldn't run at the init hop?
+telemetry {
+  hops += 1;
+}
+
+checker {
+  if (hops % 2 != 0) 
+    reject;
+}
+

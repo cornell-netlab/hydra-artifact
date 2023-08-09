@@ -1,0 +1,24 @@
+// loops and blackholes tough to do because can't check at edge
+// maybe write it in a way that would be easy for the compiler to transform to hop-by-hop
+// and have some way to specify that it should be hop by hop?
+
+control bit<16> switch_id;
+tele bool loop;
+tele bit<32>[3] switches;
+
+init {
+  loop = false;
+}
+
+telemetry {
+  if (switch_id in switches) {
+    loop = true;
+  }
+  switches.push(switch_id);
+
+}
+check {
+  if (loop) {
+    reject;
+  }
+}

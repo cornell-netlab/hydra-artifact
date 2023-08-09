@@ -1,0 +1,6 @@
+init {
+    bool y = false;
+    y.push(true);
+} 
+telemetry {} 
+check {}

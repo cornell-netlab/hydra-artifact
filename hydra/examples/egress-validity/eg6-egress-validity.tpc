@@ -1,0 +1,18 @@
+control dict<(bit<16>,bit<8>),bool> allowed_ports;
+control bit<16> switch_id;
+tele bool good;
+header@standard_metadata.egress_port bit<8> egress_port;
+
+init {
+  good = true;
+}
+telemetry {
+  if (allowed_ports[(switch_id,egress_port)]) {
+    good = false;
+  }
+}
+check {
+  if (!good) {
+    reject;
+  }
+}
