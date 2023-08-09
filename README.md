@@ -42,7 +42,7 @@ build bundled dependencies
 opam repo add coq-released https://coq.inria.fr/opam/released
 opam pin add coq-vst-zlist https://github.com/PrincetonUniversity/VST.git
 ```
-build and install with dune 
+build and install with dune, inside the petr4 directory
 ```bash
 opam install . --deps-only
 opam exec -- dune build
