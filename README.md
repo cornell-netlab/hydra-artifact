@@ -86,6 +86,6 @@ run `make` to run mininet and start the example with the following topology
 
 ![pod-topo](./p4_tutorials/exercises/basic/pod-topo/pod-topo.png)
 
-You can run commands in mininet either by getting a terminal for each host (e.g. `xterm h1 h4`) or within the mininet console pre-pending the name of the host to the command (e.g. `h1 python3 receive.py`)
+You can run commands in mininet either by getting a terminal for each host (e.g. `xterm h1 h4`) or within the mininet console pre-pending the name of the host to the command (e.g. `h1 python3 receive.py`). If running inside the mininet console, tcpdump can be used to view the packet on h4. 
 
 
