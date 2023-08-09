@@ -65,9 +65,26 @@ opam install . --deps-only
 
 ## Compiling and Linking the valley-free Indus Program with P4 source routing
 
-Compile the valley-free Indus program (ends in tpc) with the basic_topology.json file from the topologies/ directory. This topology contains a single leaf switch for the purpose of this demo (mininet will install the same program to all switches)
+Compile the valley-free Indus program (ends in tpc) with the basic_topology.json file from the topologies directory. This topology contains a single leaf switch for the purpose of this demo (mininet will install the same program to all switches)
 ```bash
 dune exec -- tpc examples/valley-free/valley-free.tpc basic_topology.json
 ```
 
+### Linking with the source routing program 
+
+add these two lines to the top of the P4 program output in the generated_p4 directory
+```OCaml
+#include <v1model.p4> 
+#define ETHERTYPE_CHECKER 0x5678;
+```
+
+copy the file to the p4_tutorials directory where the source routing example lives in `exercises/valley_free/hydra`
+
 ## Running the source routing example in mininet
+
+run `make` to run mininet and start the example. 
+
+![pod-topo](./hydra-artifact/p4_tutorials/exercises/basic
+/pod-topo/pod-topo.png)
+
+
