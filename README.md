@@ -84,7 +84,6 @@ copy the file to the p4_tutorials directory where the source routing example liv
 
 run `make` to run mininet and start the example. 
 
-![pod-topo](./hydra-artifact/p4_tutorials/exercises/basic
-/pod-topo/pod-topo.png)
+![pod-topo](./hydra-artifact/p4_tutorials/exercises/basic/pod-topo/pod-topo.png)
 
 
