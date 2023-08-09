@@ -14,10 +14,6 @@ initialize opam with the 4.14.0 OCaml compiler.
 ```bash
 opam init --compiler=4.14.0
 ```
-install Hydra dependencies with opam
-```bash
-opam install . --deps-only
-```
 
 ### Install Petr4 from source 
 
@@ -60,4 +56,18 @@ git clone https://github.com/jafingerhut/p4-guide
 ```
 This installs mininet and the bmv2 compiler. 
 
-# Instructions to Run Hydra 
+# Instructions to Install and Run Hydra 
+
+install Hydra dependencies with opam inside the hydra directory
+```bash
+opam install . --deps-only
+```
+
+## Compiling and Linking the valley-free Indus Program with P4 source routing
+
+Compile the valley-free Indus program (ends in tpc) with the basic_topology.json file from the topologies/ directory. This topology contains a single leaf switch for the purpose of this demo (mininet will install the same program to all switches)
+```bash
+dune exec -- tpc examples/valley-free/valley-free.tpc basic_topology.json
+```
+
+## Running the source routing example in mininet
