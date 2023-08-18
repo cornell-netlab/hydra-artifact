@@ -1,3 +1,0 @@
-# TNA results
-
-This directory contains the compiled Indus programs for the examples in Table 1 of the paper. Use the TNA compiler... 

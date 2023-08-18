@@ -1,21 +1,19 @@
 # Valley Free Source Routing
 
-This directory contains the necesarry code to run the valley free source routing example from the paper. The first step is to install the necesaary p4 tools and mininet. Then, compile the Indus program and link it with the source routing forwarding program. Finally, run the example in mininet and experiment with different source routes. 
+This directory contains the necesarry code to run the valley free source routing example from the paper. The first step is to install the necesary p4 tools and mininet. Then, compile the Indus program and link it with the source routing forwarding program. Finally, run the example in mininet and experiment with different source routes. 
 
-
-### Install p4 tools
+### Install P4 tools
 ```bash
 git clone https://github.com/jafingerhut/p4-guide
 ./p4-guide/bin/install-p4dev-v5.sh |& tee log.txt
 ```
-This installs mininet and the bmv2 compiler. 
-
+This installs the `p4c` compiler, `bmv2`, and `mininet`.
 
 ## Compiling and Linking the valley-free Indus Program with P4 source routing
 
 Compile the valley-free Indus program from the `hydra/examples`` directory with the basic_topology.json file from the topologies directory. This topology contains a single leaf switch for the purpose of this demo (mininet will install the same program to all switches).
 ```bash
-dune exec -- tpc examples/valley-free/valley-free.tpc basic_topology.json
+dune exec -- tpc valley-free.tpc ../../examples/basic_topology.json
 ```
 
 ### Linking with the source routing program 
