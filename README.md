@@ -1,67 +1,27 @@
 # hydra-artifact
 
-This repo contains the necesarry code and instructions to recreate the findings in our paper. 
+This repository contains the artifact for "[Hydra: Practical Runtime Network Verification](https://www.cs.cornell.edu/~jnfoster/papers/hydra.pdf)," which will appear at SIGCOMM '23.
 
-Each result lives in its own directory. 
-* hydra contains the source code for the compiler and the examples directory contains the Indus programs from the paper
-* valley_free contains the mininet example for valley free source routing in figure 7 of the paper
+# Organization
 
-**TODO:** 
-* Directory for TNA examples (Sundar/Nate)
-* Figure 12 (Joon)
+The codebase is organized into several sub-directories as follows:
 
+* `indus/`: OCaml source code for the Indus compiler (Section 4)
+* `studies/`: Data and scripts for the case studies  (Section 5)
+* `examples/`: Indus source code for the example programs (Section 6.1)
+* `benchmark/` Source code, data, and scripts for the performance benchmarks (Section 6.2)
 
+Each sub-directory has its own `README.md` file with further instructions. 
 
-# Instructions to build Hydra compiler
+We recommend exploring the codebase in the following order:
+1. Build the Indus compiler (in `indus/`)
+1. Run the "valley free" routing case study (in `studies/valley_free/`)
+1. Compile the example programs (in `examples/`)
+1. Explore the Aether case study (in `studies/aether`)
+1. Explore the performance benchmarks (in `benchmarks`)
 
-This tutorial requires an Ubuntu 20.04 install. 
-
-## Installing OCaml
-
-install opam 
-```bash
-apt install opam
-```
-initialize opam with the 4.14.0 OCaml compiler. 
-```bash
-opam init --compiler=4.14.0
-```
-
-### Install Petr4 from source 
-
-clone the Petr4 repo
-```bash
-git clone git@github.com:verified-network-toolchain/petr4.git
-```
-install external dependencies
-```bash
-sudo apt-get install m4 libgmp-dev
-```
-
-install [p4pp](https://github.com/cornell-netlab/p4pp) from source
-```bash
-git clone git@github.com:cornell-netlab/p4pp.git
-opam pin add p4pp <path to root of p4pp repo>
-```
-
-install coq and bignum
-```bash
-opam install coq
-opam install bignum
-```
-build bundled dependencies
-```bash
-opam repo add coq-released https://coq.inria.fr/opam/released
-opam pin add coq-vst-zlist https://github.com/PrincetonUniversity/VST.git
-```
-build and install with dune, inside the petr4 directory
-```bash
-opam install . --deps-only
-opam exec -- dune build
-dune install
-```
-
-install Hydra dependencies with opam inside the hydra directory
-```bash
-opam install . --deps-only
-```
+Please contact us if you have any questions, either anonymously on HotCRP or by email as appropriate:
+* Sundararajan Renganathan (rsundar@stanford.edu)
+* Benny Rubin (bcr57@cornell.edu)
+* Hyojoon Kim (hyojoonkim@virginia.edu)
+* Nate Foster (jnfoster@cs.cornell.edu)
