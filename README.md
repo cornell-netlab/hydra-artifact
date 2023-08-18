@@ -20,8 +20,15 @@ We recommend exploring the codebase in the following order:
 1. Explore the Aether case study (in `studies/aether`)
 1. Explore the performance benchmarks (in `benchmarks`)
 
+# Status
+
+Note that this artifact is still being updated. We are making the source code available now, but some functionality is being updated from our private development. In addition, we plan to provide more detailed instructions for the case studies and benchmarks, some of which rely on proprietary hardware and data.
+
+# Contact
+
 Please contact us if you have any questions, either anonymously on HotCRP or by email as appropriate:
 * Sundararajan Renganathan (rsundar@stanford.edu)
 * Benny Rubin (bcr57@cornell.edu)
 * Hyojoon Kim (hyojoonkim@virginia.edu)
 * Nate Foster (jnfoster@cs.cornell.edu)
+
