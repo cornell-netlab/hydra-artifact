@@ -14,7 +14,7 @@ init {
 }
 telemetry {
   if (lasthop && !allowed[(ipv4_dst,ipv4_src)]) {
-    //report((ipv4_dst,ipv4_src));
+    report((ipv4_dst,ipv4_src));
     reject;
   }
 }
