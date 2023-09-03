@@ -2,7 +2,7 @@
 type topology = { title : string; switches : int; topology : (int * bool) list }
 
 let json2topology file =
-  let json = Yojson.Basic.from_file file in
+  let json = Yojson.Basic.from_file ("topologies/" ^ file) in
   let open Yojson.Basic.Util in
   let title = json |> member "title" |> to_string in
   let switches = json |> member "switches" |> to_int in

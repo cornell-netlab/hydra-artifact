@@ -346,6 +346,7 @@ let get_struct_decl_for_hydra_metadata (tpc_decls : decl list) =
   let list_vars = List.filter is_list_var tpc_decls in
   let symbol_t = Ast_util.symbol_table_decl_list tpc_decls in
   let control_vars = Ast_util.get_control_vars symbol_t in
+  let sensor_vars = Ast_util.get_sensor_vars symbol_t in
   let dict_vars = Ast_util.get_dict_vars symbol_t in
   let type_to_struct_decl typ var =
     match typ with
@@ -377,7 +378,7 @@ let get_struct_decl_for_hydra_metadata (tpc_decls : decl list) =
     (BBool, "reject0")
     ::
     (if List.length list_vars > 0 then [ (BBit 8, "num_list_items") ] else [])
-    @ List.map to_struct_decl control_vars
+    @ List.map to_struct_decl (control_vars @ sensor_vars)
     @ List.flatten (List.map dict_helper_decls dict_vars)
   in
   mk_p4struct p4struct_decls "hydra_metadata_t"

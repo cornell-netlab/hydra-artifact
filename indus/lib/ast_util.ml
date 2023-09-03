@@ -89,6 +89,11 @@ let get_control_vars symbol_t =
   let bindings = SymbolTable.bindings symbol_t in
   List.filter is_control bindings |> List.map (fun (name, (_, _)) -> name)
 
+let get_sensor_vars symbol_t =
+  let is_sensor = function name, (Sensor, _) -> true | _ -> false in
+  let bindings = SymbolTable.bindings symbol_t in
+  List.filter is_sensor bindings |> List.map (fun (name, (_, _)) -> name)
+
 let get_list_vars symbol_t =
   let is_list = function name, (_, List (_, _)) -> true | _ -> false in
   let bindings = SymbolTable.bindings symbol_t in
@@ -114,3 +119,51 @@ let remove_duplicates strings =
       else acc)
     [] (List.rev strings)
   |> List.rev
+
+let rec expression_contains_sensor expr symbol_t : string list =
+  let is_sensor symbol_t id =
+    match get_net_typ symbol_t id with
+    | Sensor -> true
+    | _ -> false
+    | exception Not_found -> false
+  in
+  remove_duplicates
+    (match expr with
+    | DictLookup (id, tup) ->
+        List.filter (is_sensor symbol_t) tup
+        (*look at every id in tuple to see if it's a sensor*)
+    | Var id -> List.filter (is_sensor symbol_t) [ id ]
+    | Value v -> []
+    | Binop (bop, e1, e2) ->
+        expression_contains_sensor e1 symbol_t
+        @ expression_contains_sensor e2 symbol_t
+    | Uop (uop, expr) -> expression_contains_sensor expr symbol_t
+    | ListIndex (id, expr) -> expression_contains_sensor expr symbol_t
+    | Keyword k -> [])
+
+let statement_contains_sensor statement symbol_t : string list =
+  remove_duplicates
+    (match statement with
+    | Pass -> []
+    | Push (id, expr) -> expression_contains_sensor expr symbol_t
+    | Local_dec (vt, id, expr) -> expression_contains_sensor expr symbol_t
+    | Assignment (id, expr) -> expression_contains_sensor expr symbol_t
+    | For (_, _, _) -> []
+    | Branch (expr, code, elifs, els) ->
+        expression_contains_sensor expr symbol_t
+    | Exception e -> [])
+(*ignore the case where sensor is on LHS of assignment*)
+
+let rec get_codeblock_sensors codeblock symbol_t : string list =
+  remove_duplicates
+    (match codeblock with
+    | Branch (expr, code, _, els) :: t ->
+        (expression_contains_sensor expr symbol_t
+        @ get_codeblock_sensors code symbol_t
+        @
+        match els with Some c -> get_codeblock_sensors c symbol_t | None -> [])
+        @ get_codeblock_sensors t symbol_t
+    | head :: t ->
+        statement_contains_sensor head symbol_t
+        @ get_codeblock_sensors t symbol_t
+    | [] -> [])

@@ -31,6 +31,8 @@ struct hydra_metadata_t {
   bit<8> left_port;
   bit<8> right_port;
   bit<32> thresh;
+  bit<32> left_load;
+  bit<32> right_load;
   bit<8> is_uplink_var0;
 }
 parser CheckerHeaderParser(packet_in packet, out hydra_header_t hydra_header,
@@ -120,8 +122,8 @@ control initControl(inout hydra_header_t hydra_header,
     hydra_header.variables.setValid();
     hydra_header.left_loads_preamble.num_items_left_loads = 0;
     hydra_header.right_loads_preamble.num_items_right_loads = 0;
-    hydra_sensor.left_load = 0;
-    hydra_sensor.right_load = 0;
+    left_load.write(0, 0);
+    right_load.write(0, 0);
   }
 }
 control telemetryControl(inout hydra_header_t hydra_header,
@@ -159,31 +161,37 @@ control telemetryControl(inout hydra_header_t hydra_header,
   apply
     {
     tb_init_cp_vars.apply();
+    register<bit<32>>(1) left_load;
+    register<bit<32>>(1) right_load;
     hydra_metadata.is_uplink_var0 = standard_metadata.egress_port;
     tbl_lkp_cp_dict_is_uplink.apply();
     if (hydra_metadata.is_uplink)
       {
       if (standard_metadata.egress_port==hydra_metadata.left_port)
         {
-        hydra_sensor.left_load =
-        hydra_sensor.left_load+standard_metadata.packet_length;
+        left_load.read(hydra_metadata.left_load, 0);
+        left_load.write(0,
+                          hydra_metadata.left_load+standard_metadata.packet_length);
       }else
       {
       if (standard_metadata.egress_port==hydra_metadata.right_port)
         {
-        hydra_sensor.right_load =
-        hydra_sensor.right_load+standard_metadata.packet_length;
+        right_load.read(hydra_metadata.right_load, 0);
+        right_load.write(0,
+                           hydra_metadata.right_load+standard_metadata.packet_length);
       }
       }
     }
+    left_load.read(hydra_metadata.left_load, 0);
     hydra_header.left_loads.push_front(1);
     hydra_header.left_loads[0].setValid();
-    hydra_header.left_loads[0].value = hydra_sensor.left_load;
+    hydra_header.left_loads[0].value = hydra_metadata.left_load;
     hydra_header.left_loads_preamble.num_items_left_loads =
     hydra_header.left_loads_preamble.num_items_left_loads+1;
+    right_load.read(hydra_metadata.right_load, 0);
     hydra_header.right_loads.push_front(1);
     hydra_header.right_loads[0].setValid();
-    hydra_header.right_loads[0].value = hydra_sensor.right_load;
+    hydra_header.right_loads[0].value = hydra_metadata.right_load;
     hydra_header.right_loads_preamble.num_items_right_loads =
     hydra_header.right_loads_preamble.num_items_right_loads+1;
   }

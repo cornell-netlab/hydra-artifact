@@ -19,7 +19,7 @@ let get_var_name symbol_t var =
   | Control -> mk_named_expression_member "hydra_metadata" var
   | Tele -> mk_named_expression_member2 "hydra_header" "variables" var
   | Sensor ->
-      mk_named_expression_member "hydra_sensor" var
+      mk_named_expression_member "hydra_metadata" var
       (*TODO: This should probably change*)
   | exception Not_found (*local var*) ->
       Surface.Expression.Name
@@ -178,14 +178,35 @@ and transform_expr (expr : expr) symbol_t : Petr4.Surface.Expression.t =
   | DictLookup (id, _) -> mk_named_expression_member "hydra_metadata" id
   | Keyword keyword -> transform_keyword keyword
 
-let transform_assignment id expr symbol_t =
-  Surface.Statement.Assignment
-    {
-      tags = p4info_tpc;
-      (*TODO: this should depend on var type*)
-      lhs = get_var_name symbol_t id;
-      rhs = transform_expr expr symbol_t;
-    }
+let transform_assignment id expr symbol_t : Surface.Statement.t =
+  (*check if LHS is sensor and if so change it to sensor.write(0, transform_expr(exp)) statement*)
+  match get_net_typ symbol_t id with
+  | Sensor ->
+      Surface.Statement.MethodCall
+        {
+          tags = p4info_tpc;
+          func = Name { tags = p4info_tpc; name = mk_p4name (id ^ ".write") };
+          type_args = [];
+          args =
+            [
+              Surface.Argument.Expression
+                {
+                  tags = p4info_tpc;
+                  value =
+                    Surface.Expression.Int { tags = p4info_tpc; x = mk_p4int 0 };
+                };
+              Surface.Argument.Expression
+                { tags = p4info_tpc; value = transform_expr expr symbol_t };
+            ];
+        }
+  | (exception Not_found) | _ ->
+      Surface.Statement.Assignment
+        {
+          tags = p4info_tpc;
+          (*TODO: this should depend on var type*)
+          lhs = get_var_name symbol_t id;
+          rhs = transform_expr expr symbol_t;
+        }
 
 let transform_type symbol_t = function
   | Bit n ->
@@ -323,6 +344,34 @@ let mk_pre_dict_lookup symbol_t = function
       assignments @ [ apply ]
   | _ -> failwith "Impossible. Must be DictLookup "
 
+let mk_sensor_read sensor =
+  Surface.Statement.MethodCall
+    {
+      tags = p4info_tpc;
+      func = mk_named_expression_member sensor "read";
+      type_args = [];
+      args =
+        [
+          Surface.Argument.Expression
+            {
+              tags = p4info_tpc;
+              value =
+                Surface.Expression.Name
+                  {
+                    tags = p4info_tpc;
+                    name = BareName (mk_p4string ("hydra_metadata." ^ sensor));
+                  };
+            };
+          Surface.Argument.Expression
+            {
+              tags = p4info_tpc;
+              value =
+                Surface.Expression.Int { tags = p4info_tpc; x = mk_p4int 0 };
+            };
+        ];
+    }
+(*TODO*)
+
 let rec transform_for vars loops codeblock symbol_t =
   let decl_var id list =
     let var_t =
@@ -421,6 +470,11 @@ and transform_statement (stmt : statement) symbol_t :
   let lookup_statements =
     List.flatten (List.map (mk_pre_dict_lookup symbol_t) lookups)
   in
+  let sensors_read = Ast_util.statement_contains_sensor stmt symbol_t in
+  let sensor_read_statements =
+    List.map mk_sensor_read sensors_read
+    (*TODO: Same thing with sensor. Lookup which ones are in the statement and then add the read for the metadata variable*)
+  in
   let statements =
     match stmt with
     (*need to do lookahead for dictionary lookups*)
@@ -440,14 +494,47 @@ and transform_statement (stmt : statement) symbol_t :
             (Value (Bool_const true)) symbol_t;
         ]
   in
-  lookup_statements @ statements
+  sensor_read_statements @ lookup_statements @ statements
 
-and transform_block (block : codeblock) symbol_t : Surface.Block.t =
+and transform_block (block : codeblock) (control : bool) symbol_t :
+    Surface.Block.t =
+  let bit2str = function
+    | Bit n -> Printf.sprintf "bit<%d>" n
+    | _ -> failwith "sensor must be of type bit<n>"
+  in
+  let mk_register_decl name : Surface.Statement.t =
+    let typ = Ast_util.get_var_typ symbol_t name in
+    Surface.Statement.DeclarationStatement
+      {
+        tags = p4info_tpc;
+        decl =
+          Surface.Declaration.Variable
+            {
+              tags = p4info_tpc;
+              annotations = [];
+              typ =
+                Surface.Type.TypeName
+                  {
+                    tags = p4info_tpc;
+                    name =
+                      mk_p4name (Printf.sprintf "register<%s>(1)" (bit2str typ));
+                  };
+              name = mk_p4string name;
+              init = None;
+            };
+      }
+  in
+  let sensors = Ast_util.get_codeblock_sensors block symbol_t in
+  let sensor_decls =
+    if control then List.map mk_register_decl sensors else []
+  in
+  (*look at sensors here and include the register<type>(1) var initialization, only if it's a control block*)
   {
     tags = p4info_tpc;
     annotations = [];
     statements =
-      List.flatten (List.map (fun x -> transform_statement x symbol_t) block);
+      sensor_decls
+      @ List.flatten (List.map (fun x -> transform_statement x symbol_t) block);
   }
 
 and transform_branch expr codeblock els symbol_t =
@@ -458,13 +545,19 @@ and transform_branch expr codeblock els symbol_t =
       cond = transform_expr expr symbol_t;
       tru =
         BlockStatement
-          { tags = p4info_tpc; block = transform_block codeblock symbol_t };
+          {
+            tags = p4info_tpc;
+            block = transform_block codeblock false symbol_t;
+          };
       fls =
         (match els with
         | Some code ->
             Some
               (BlockStatement
-                 { tags = p4info_tpc; block = transform_block code symbol_t })
+                 {
+                   tags = p4info_tpc;
+                   block = transform_block code false symbol_t;
+                 })
         | None -> None);
     }
 
@@ -778,7 +871,8 @@ let transform_init (Init init_block) symbol_t : Petr4.Surface.Declaration.t =
   in
   let push_variables = mk_push_variables symbol_t in
   let block =
-    transform_block init_block symbol_t |> insert_stmts_block push_variables
+    transform_block init_block true symbol_t
+    |> insert_stmts_block push_variables
   in
   Control
     {
@@ -818,10 +912,10 @@ let transform_telemetry (Telemetry tele_block) symbol_t :
       locals;
       apply =
         (match control_non_dict_action with
-        | None -> transform_block tele_block symbol_t
+        | None -> transform_block tele_block true symbol_t
         | Some _ ->
             insert_stmts_block [ mk_control_init_apply ]
-              (transform_block tele_block symbol_t));
+              (transform_block tele_block true symbol_t));
     }
 
 let transform_checker (Check checker_block : check) symbol_t :
@@ -837,7 +931,7 @@ let transform_checker (Check checker_block : check) symbol_t :
   in
   let strip_variables = mk_strip_telemetry symbol_t in
   let block =
-    transform_block checker_block symbol_t
+    transform_block checker_block true symbol_t
     |> insert_stmts_block_end strip_variables
   in
   Control
