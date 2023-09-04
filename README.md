@@ -1,6 +1,8 @@
 # hydra-artifact
 
-This repository contains the artifact for "[Hydra: Practical Runtime Network Verification](https://www.cs.cornell.edu/~jnfoster/papers/hydra.pdf)," which will appear at SIGCOMM '23.
+This repository contains the artifact for the SIGCOMM '23 paper "[Hydra: Practical Runtime Network Verification](https://www.cs.cornell.edu/~jnfoster/papers/hydra.pdf)".
+
+For the most up-to-date version of the artifact, please visit [https://github.com/cornell-netlab/hydra-artifact](https://github.com/cornell-netlab/hydra-artifact).
 
 # Organization
 
