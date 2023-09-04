@@ -163,6 +163,8 @@ rule token = parse
   {NOT (info lexbuf)}
 | "reject" 
   {REJECT (info lexbuf)}
+| "report" 
+  {REPORT (info lexbuf)}
 | "path" 
   {PATH (info lexbuf)}
 | "length"

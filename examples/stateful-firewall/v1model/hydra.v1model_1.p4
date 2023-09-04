@@ -118,6 +118,7 @@ control telemetryControl(inout hydra_header_t hydra_header,
     tbl_lkp_cp_dict_allowed.apply();
     if (hydra_metadata.lasthop && !hydra_metadata.allowed)
       {
+      clone(CloneType.E2E, 0);
       hydra_metadata.reject0 = true;
     }
   }

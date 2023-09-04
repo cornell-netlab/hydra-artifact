@@ -344,6 +344,30 @@ let mk_pre_dict_lookup symbol_t = function
       assignments @ [ apply ]
   | _ -> failwith "Impossible. Must be DictLookup "
 
+let mk_report =
+  Surface.Statement.MethodCall
+    {
+      tags = p4info_tpc;
+      func = Name { tags = p4info_tpc; name = mk_p4name "clone" };
+      type_args = [];
+      args =
+        [
+          Surface.Argument.Expression
+            {
+              tags = p4info_tpc;
+              value =
+                Surface.Expression.Name
+                  { tags = p4info_tpc; name = mk_p4name "CloneType.E2E" };
+            };
+          Surface.Argument.Expression
+            {
+              tags = p4info_tpc;
+              value =
+                Surface.Expression.Int { tags = p4info_tpc; x = mk_p4int 0 };
+            };
+        ];
+    }
+
 let mk_sensor_read sensor =
   Surface.Statement.MethodCall
     {
@@ -487,7 +511,7 @@ and transform_statement (stmt : statement) symbol_t :
         transform_for pair1 pair2 codeblock symbol_t
     | Branch (expr, codeblock, elifs, els) ->
         [ transform_branch expr codeblock els symbol_t ]
-    | Exception Report -> failwith "Report Unimplemented"
+    | Exception Report -> [ mk_report ]
     | Exception Reject ->
         [
           transform_assignment "hydra_metadata.reject0"
